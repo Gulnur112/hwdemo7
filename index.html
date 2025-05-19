@@ -1,0 +1,114 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Film</title>
+  <style>
+    body {
+      font-family: sans-serif;
+      padding: 40px;
+      background-color: #070707;
+      text-align: center;
+      color:white;
+    }
+
+    h1 {
+      margin-bottom: 20px;
+      color:white;
+      font-size:30px;
+    }
+
+    input {
+      padding: 10px;
+      font-size: 16px;
+      width: 200px;
+      border: 1px solid #aaa;
+      border-radius: 4px;
+      height:30px;
+    }
+
+    button {
+      padding: 10px 16px;
+      margin-left: 10px;
+      background-color: white;
+      border: 1px solid gray;
+      border-radius: 4px;
+      cursor: pointer;
+      font-size: 16px;
+      height:40px;
+    }
+
+    .info {
+      margin: 30px auto 0;
+      background-color: rgb(69, 67, 67);
+      padding: 20px;
+      width: 90%;
+      max-width: 400px;
+      border: 1px solid #ccc;
+      border-radius: 8px;
+      text-align: left;
+    }
+
+    .info img {
+      width: 100%;
+      height: auto;
+      border-radius: 8px;
+    }
+
+    .info h2 {
+      margin-top: 10px;
+      font-size: 22px;
+    }
+
+    .info p {
+      margin: 8px 0;
+      font-size: 15px;
+    }
+  </style>
+</head>
+<body>
+
+  <h1>Movie Explorer</h1>
+
+  <input type="text" id="movie-name" placeholder="Search for a movie...">
+  <button id="search-btn">Search</button>
+
+  <div class="info" id="Movie-info"></div>
+
+  <script>
+    document.getElementById("search-btn").addEventListener("click", async () => {
+      const movieName = document.getElementById("movie-name").value.trim();
+      const infoContainer = document.getElementById("Movie-info");
+
+      if (!movieName) {
+        infoContainer.innerHTML = "<p>Please enter a movie name.</p>";
+        return;
+      }
+
+      try {
+        const response = await fetch(`https://www.omdbapi.com/?t=${encodeURIComponent(movieName)}&apikey=thewdb`);
+        const movie = await response.json();
+
+        console.log(movie); 
+        if (movie.Response === "True") {
+          infoContainer.innerHTML = `
+             <img src="${movie.Poster}" alt="${movie.Title} poster">
+            <h2>${movie.Title}</h2>
+            <p><strong>Information:</strong> ${movie.Plot}</p>
+            <p><strong>Rating:</strong> ${movie.imdbRating}</p>
+            
+          `;
+        } else {
+          infoContainer.innerHTML = `<p>Movie not found.</p>`;
+          console.warn("No movie found");
+        }
+
+      } catch (error) {
+        console.error("Fetch error:", error);
+        infoContainer.innerHTML = "<p>Error loading movie data.</p>";
+      }
+    });
+  </script>
+</body>
+</html>
